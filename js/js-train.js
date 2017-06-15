@@ -10,14 +10,6 @@ class Action{
     }
 }
 
-function repeat(times){
-    var timesLeft = times;
-    return function(){
-        timesLeft--;
-        return timesLeft > 0;
-    }
-}
-
 class SleepAction extends Action{
     constructor(ms, nextAction){
         super("Sleep " + ms);
@@ -26,12 +18,21 @@ class SleepAction extends Action{
     }
 
     run(){
-        setTimeout(this.nextAction.run(), this.ms);
+        var func = () => this.nextAction.run();
+        setTimeout(func, this.ms);
+    }
+}
+
+function repeat(times){
+    var timesLeft = times;
+    return function(){
+        timesLeft--;
+        return timesLeft > 0;
     }
 }
 
 class Block extends Action{
-    constructor(name = "Block", actions, repeat){
+    constructor(name = "Block", actions, repeat = repeat(1)){
         super(name);
         this.repeat = repeat;
         this.instructions = actions;
@@ -123,3 +124,7 @@ var availableActions = {
     'wait': waitSeconds,
     'text-to-speech': textToSpeech
 };
+
+
+// BUILDERS
+
