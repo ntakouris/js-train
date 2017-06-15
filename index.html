@@ -15,6 +15,9 @@
         integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" 
         crossorigin="anonymous">
 
+    <!-- Sweetalert -->
+    <link rel="stylesheet" href="./resources/css/sweetalert.css">
+
     <title>js-train</title>
     <meta charset="utf-8">
 
@@ -22,8 +25,69 @@
 
 <body>
     <audio id="beep" src="./resources/audio/beep.mp3"> </audio>
-    <div class="jumbotron">
-        <h1>Welcome to js-train</h1>
+    <div class="container">
+        <div class="jumbotron">
+            <h1>Welcome to js-train</h1>
+            <p>Scroll down to get started, or</p>
+            <button type="button" href="#presets" class="btn btn-primary">Pick a Workout</button>
+        </div>
+
+        <div id="queue" class="col-xs-12">
+        <table id="queue-table" class="table table-striped">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>Workout</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>Boxing Bag (x3)</td>
+                <td>
+                    <span class="glyphicon glyphicon-play" aria-hidden="true"> </span>
+                    <button type="button" class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"> </span>
+                    </button>
+                    </td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Running Around (x1)</td>
+                <td>
+                    <button type="button" class="btn btn-danger">
+                        <span class="glyphicon glyphicon-remove-sign" aria-hidden="true"></span>
+                    </button>
+                </td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td></td>
+                <td></td>
+            </tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div id="queue-actions"></div>
+
+        <div id="search-workouts" class="col-xs-12">
+            <h2>Workout Selector</h1>
+            <div class="form-group">
+                <label for="workout-name">Search by Name:</label>
+                <input type="text" class="form-control" id="workout-name">
+            </div>
+            <h3>Popular Workouts</h3>
+            <hr>
+            <div id="workout-box" class="list-group"></div>
+        </div>
+
     </div>
 
     <!-- JQUERY FOR BOOTSTRAP -->
@@ -36,8 +100,12 @@
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" 
         crossorigin="anonymous"></script>
 
+    <!-- Sweetalert JS -->
+    <script src="resources/lib/sweetalert.min.js"></script>
+
     <script src='./js/js-train.js'></script>
     <script src='./js/resources.js'></script>
+    <script src='./js/ui-manager.js'></script>
 </body>
 
 </html>

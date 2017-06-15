@@ -77,6 +77,14 @@ class FlowSplitter extends Action{
     }
 }
 
+class Workout{
+    constructor(name, desc, block){
+        this.name = name;
+        this.desc = desc;
+        this.block = block;
+    }
+}
+
 function getRandomInt(min, max){
     min = Math.ceil(min);
     max = Math.floor(max);
