@@ -1,3 +1,5 @@
+const step = 100;
+
 class Action{
     constructor(name = "Action", actualAction){
         this.name = name;
@@ -11,15 +13,14 @@ class Action{
 }
 
 class SleepAction extends Action{
-    constructor(ms, nextAction){
+    constructor(ms){
         super("Sleep " + ms);
         this.ms = ms;
-        this.nextAction = nextAction;
     }
 
     run(){
-        var func = () => this.nextAction.run();
-        setTimeout(func, this.ms);
+        this.ms = this.ms - step;
+        return this.ms <= 0;
     }
 }
 
@@ -32,20 +33,17 @@ function repeat(times){
 }
 
 class Block extends Action{
-    constructor(name = "Block", actions, repeat = repeat(1)){
-        super(name);
+    constructor(name = "Block", actions, repeat){
+        super(name, actualAction);
         this.repeat = repeat;
-        this.instructions = actions;
     }
     
     run(){
-        this.instructions.forEach(function(action) {
-            action.run();
-        });
-
-        if(this.repeat()){
-            this.run();
+        while(repeat()){
+            this.actions.concat(this.actions);
         }
+
+        return this.actions; //kindof a flatmap
     }
 }
 
@@ -104,7 +102,7 @@ function progressiveActionPickBehavior(n){
 }
 
 function waitSeconds(seconds){
-    return new SleepAction(seconds * 1000, new Action("Do nothing", function (){}));
+    return new SleepAction(seconds * 1000);
 }
 
 function playSound(sound){
@@ -124,6 +122,30 @@ var availableActions = {
     'wait': waitSeconds,
     'text-to-speech': textToSpeech
 };
+
+//PLAYER
+var playQueue = [];
+var paused = false;
+function mainLoop(){
+    if(paused){ return; }
+
+    if(playQueue.length > 0){
+        var candidate = playQueue.shift();
+        if(typeof(candidate) === 'boolean'){
+            if(!candidate.run()){//should be a sleep action
+                playQueue.unshift(candidate);
+            }
+        }else if(candidate.constructor === Array){
+            candidate.forEach(function(entry) {
+                playQueue.shift(entry);
+            });
+        }else{
+            candidate.run();
+        }
+    }//else keep waitin
+}
+
+setInterval(mainLoop, step);
 
 
 // BUILDERS
