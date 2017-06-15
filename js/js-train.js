@@ -1,4 +1,4 @@
-const step = 100;
+const step = 1000;
 
 class Action{
     constructor(name = "Action", actualAction){
@@ -19,6 +19,7 @@ class SleepAction extends Action{
     }
 
     run(){
+        console.log("Sleeping step");
         this.ms = this.ms - step;
         return this.ms <= 0;
     }
@@ -34,16 +35,18 @@ function repeat(times){
 
 class Block extends Action{
     constructor(name = "Block", actions, repeat){
-        super(name, actualAction);
+        super(name, actions);
         this.repeat = repeat;
     }
     
     run(){
-        while(repeat()){
-            this.actions.concat(this.actions);
+        console.log("Flattenning with repeat");
+        while(this.repeat()){
+            this.actualAction = this.actualAction.concat(this.actualAction);
         }
-
-        return this.actions; //kindof a flatmap
+        console.log("Returning bill of actions");
+        //console.log(this.actualAction);
+        return this.actualAction; //kindof a flatmap
     }
 }
 
@@ -123,24 +126,35 @@ var availableActions = {
     'text-to-speech': textToSpeech
 };
 
-//PLAYER
+// PLAYER
 var playQueue = [];
 var paused = false;
+
 function mainLoop(){
-    if(paused){ return; }
+    console.log("Step");
+    if(paused){ 
+        console.log("Currently paused");
+        return;
+     }
 
     if(playQueue.length > 0){
-        var candidate = playQueue.shift();
+        console.log("Picking first entry");
+        var entry = playQueue.shift();
+        console.log("Running entry to pick candidate : " + typeof(entry));
+        var candidate = entry.run();
         if(typeof(candidate) === 'boolean'){
-            if(!candidate.run()){//should be a sleep action
-                playQueue.unshift(candidate);
+            console.log("Candidate is a sleepaction");
+            if(!candidate){//should be a sleep action
+                playQueue.unshift(entry);
+                console.log("Sleep action not yet complete");
             }
-        }else if(candidate.constructor === Array){
-            candidate.forEach(function(entry) {
-                playQueue.shift(entry);
+        }else if(candidate && candidate.constructor === Array){
+            console.log("Candidate is a block, unpacking actions...");
+            candidate.reverse().forEach(function(entry) {
+                playQueue.unshift(entry);
             });
         }else{
-            candidate.run();
+            console.log("Candidate is just an Action!");
         }
     }//else keep waitin
 }

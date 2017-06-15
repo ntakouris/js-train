@@ -3,9 +3,23 @@ var availableSounds = ['beep']
 // PRESETS
 
 var beepAction = new Action("Beep" , playSound("beep"));
-var doNothing = new Action("Nothing", function(){});
 
-var testPreset = new Block("ABC", [new SleepAction(5000, doNothing)], repeat(1));
+var boxingBagPreset = new Block("Boxing Bag 15-15-15-15 3 Times", [
+                                                                        beepAction, 
+                                                                        new SleepAction(2000),
+                                                                        new Action("FOOTWORK", textToSpeech("FOOTWORK")),
+                                                                        new SleepAction(15000),
+                                                                        new Action("TECHNIQUE", textToSpeech("TECHNIQUE")),
+                                                                        new SleepAction(15000),
+                                                                        new Action("SPEED", textToSpeech("SPEED")),
+                                                                        new SleepAction(15000),
+                                                                        new Action("POWER", textToSpeech("POWER")),
+                                                                        new SleepAction(15000),
+                                                                        new Action("REST", textToSpeech("REST")),
+                                                                        new SleepAction(15000),
+                                                                  ] ,repeat(3));
+
+//playQueue.push(boxingBagPreset);
 
 // var boxingBagPreset = new Block("Boxing Bag 15-15-15-15 3 Times", 
 //     [beepAction, 
