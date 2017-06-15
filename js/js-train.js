@@ -16,18 +16,25 @@ class SleepAction extends Action{
     constructor(ms){
         super("Sleep " + ms);
         this.ms = ms;
+        this.initialMs = ms;
     }
 
     run(){
-        console.log("Sleeping step");
+        if(this.ms <= 0){
+            this.ms = this.initialMs;
+        }
         this.ms = this.ms - step;
         return this.ms <= 0;
     }
 }
 
+//auto resets
 function repeat(times){
     var timesLeft = times;
     return function(){
+        if(timesLeft < 0){
+            timesLeft = times;
+        }
         timesLeft--;
         return timesLeft > 0;
     }
@@ -40,12 +47,9 @@ class Block extends Action{
     }
     
     run(){
-        console.log("Flattenning with repeat");
         while(this.repeat()){
             this.actualAction = this.actualAction.concat(this.actualAction);
         }
-        console.log("Returning bill of actions");
-        //console.log(this.actualAction);
         return this.actualAction; //kindof a flatmap
     }
 }
@@ -131,30 +135,21 @@ var playQueue = [];
 var paused = false;
 
 function mainLoop(){
-    console.log("Step");
     if(paused){ 
-        console.log("Currently paused");
         return;
      }
 
     if(playQueue.length > 0){
-        console.log("Picking first entry");
         var entry = playQueue.shift();
-        console.log("Running entry to pick candidate : " + typeof(entry));
         var candidate = entry.run();
         if(typeof(candidate) === 'boolean'){
-            console.log("Candidate is a sleepaction");
             if(!candidate){//should be a sleep action
                 playQueue.unshift(entry);
-                console.log("Sleep action not yet complete");
             }
         }else if(candidate && candidate.constructor === Array){
-            console.log("Candidate is a block, unpacking actions...");
             candidate.reverse().forEach(function(entry) {
                 playQueue.unshift(entry);
             });
-        }else{
-            console.log("Candidate is just an Action!");
         }
     }//else keep waitin
 }
