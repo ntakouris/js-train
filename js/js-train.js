@@ -5,12 +5,33 @@ class Action{
     }
 
     run(){
+        console.log("Executing Action: " + this.name);
         this.actualAction();
     }
 }
 
+function repeat(times){
+    var timesLeft = times;
+    return function(){
+        timesLeft--;
+        return timesLeft > 0;
+    }
+}
+
+class SleepAction extends Action{
+    constructor(ms, nextAction){
+        super("Sleep " + ms);
+        this.ms = ms;
+        this.nextAction = nextAction;
+    }
+
+    run(){
+        setTimeout(this.nextAction.run(), this.ms);
+    }
+}
+
 class Block extends Action{
-    constructor(name = "Block", repeat, actions){
+    constructor(name = "Block", actions, repeat){
         super(name);
         this.repeat = repeat;
         this.instructions = actions;
@@ -18,7 +39,7 @@ class Block extends Action{
     
     run(){
         this.instructions.forEach(function(action) {
-            console.log("Playing: " + action.name);
+            action.run();
         });
 
         if(this.repeat()){
@@ -80,3 +101,25 @@ function progressiveActionPickBehavior(n){
         return index;
     }
 }
+
+function waitSeconds(seconds){
+    return new SleepAction(seconds * 1000, new Action("Do nothing", function (){}));
+}
+
+function playSound(sound){
+    return function(){
+        document.getElementById(sound).play();
+    }
+}
+
+function textToSpeech(text){
+    return function (){
+        window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    }
+}
+
+var availableActions = {
+    'play-sound': playSound,
+    'wait': waitSeconds,
+    'text-to-speech': textToSpeech
+};
