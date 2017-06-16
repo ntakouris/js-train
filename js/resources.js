@@ -16,6 +16,6 @@ var boxingBagPreset = new Block("Boxing Bag 15-15-15-15 3 Times", [
                                                                         new SleepAction(15000),
                                                                         new Action("REST", textToSpeech("REST")),
                                                                         new SleepAction(15000),
-                                                                  ] ,repeat(1));
+                                                                  ] ,repeat(1), "15 FOOTWORK - 15 TECHNIQUE - 15 SPEED - 15 POWER - 15 REST");
 
-var availableWorkouts = [new Workout("Boxing Bag", "FOOTWORK 15 - TECHNIQUE 15 - SPEED 15 - POWER 15 - REST 15", boxingBagPreset)]                        
+var availableWorkouts = [boxingBagPreset];                     

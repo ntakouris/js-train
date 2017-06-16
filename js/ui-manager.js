@@ -5,10 +5,9 @@ var queueActions = document.getElementById('queue-actions');
 const removeGlyphHTML = '<span class="glyphicon glyphicon-remove-sign" aria-hidden="true"> </span>';
 const playGlyphHTML = '<span class="glyphicon glyphicon-play" aria-hidden="true"> </span>';
 
-var uiQueue = [];
-
 queueActions.appendChild(startStopButton());
 
+//will probably never use it
 function workoutSelectHintDiv(){
     var div = document.createElement('div');
     div.role = "alert";
@@ -22,41 +21,56 @@ function startStopButton(){
     div.classList.add("col-xs-4");
 
     var button = document.createElement('button');
-    button.type = "button";
-    button.classList.add("btn", "btn-danger");
-    button.onclick = startStopPressed;
+    button.type = "button";    
+    button.onclick = function(){ startStopPressed(button); };
 
-    var span = document.createElement('span');
-    span.classList.add("glyphicon", "glyphicon-stop");
-    span.setAttribute("aria-hidden", "true");
+    startStopPressed(button);
 
-    button.appendChild(span);
-    button.innerHTML += " STOP";
-    div.appendChild(button);
+    div.appendChild(button);   
     return div;
 }
 
-function startStopPressed(){
+function startStopPressed(button){
+    paused = !paused;
 
+    button.innerHTML = "";
+
+    if(paused){
+        button.classList = "btn btn-success";
+        var span = document.createElement('span');
+        span.classList.add("glyphicon", "glyphicon-play");
+        span.setAttribute("aria-hidden", "true");
+
+        button.appendChild(span);
+        button.innerHTML += " PLAY";
+    }else{
+        button.className = "btn btn-danger"
+        var span = document.createElement('span');
+        span.classList.add("glyphicon", "glyphicon-stop");
+        span.setAttribute("aria-hidden", "true");
+
+        button.appendChild(span);
+        button.innerHTML += " PAUSE";
+    }
 }
 
 //var newRow = tableRef.insertRow(tableRef.rows.length);
 
 function showPopularWorkouts(){
-    availableWorkouts.slice(0,5).forEach(function(entry) {
+    availableWorkouts.slice(0,10).forEach(function(entry) {
+        workoutBox.innerHTML = "";
         workoutBox.appendChild(buttonFromWorkout(entry));
     });
 }
 
 showPopularWorkouts();
 
-function buttonFromWorkout(workout){
+function buttonFromWorkout(block){
     var button = document.createElement("button"); 
     button.type = "button";
     button.classList.add("list-group-item");
-    button.innerHTML = workout.name;
-    button.onclick = function(){workoutPickConfirmationAlert(workout)};
-    //show tooltip with workout.desc
+    button.innerHTML = block.name;
+    button.onclick = function(){workoutPickConfirmationAlert(block)};
     return button;
 }
 
@@ -66,10 +80,10 @@ function isInt(value) {
          !isNaN(parseInt(value, 10));
 }
 
-function workoutPickConfirmationAlert(workout){
+function workoutPickConfirmationAlert(block){
     swal({
-    title: workout.name,
-    text: workout.desc,
+    title: block.name,
+    text: block.desc,
     type: "input",
     showCancelButton: true,
     closeOnConfirm: true,
@@ -84,10 +98,15 @@ function workoutPickConfirmationAlert(workout){
                 return false;
             }else{
                 var times = parseInt(Number(inputValue));
-                //add to queue
+                var workout = new Workout(block.name, block.desc, block, repeat(times));
+                workoutQueue.push(workout);
                 return true;
             }
         }
     );
 }
 
+workoutStartNotify.push(function(){
+    //remove top row from queue table
+
+});

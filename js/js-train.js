@@ -41,9 +41,10 @@ function repeat(times){
 }
 
 class Block extends Action{
-    constructor(name = "Block", actions, repeat){
+    constructor(name = "Block", actions, repeat, desc = "Default Description"){
         super(name, actions);
         this.repeat = repeat;
+        this.desc = desc;
     }
     
     run(){
@@ -78,10 +79,11 @@ class FlowSplitter extends Action{
 }
 
 class Workout{
-    constructor(name, desc, block){
+    constructor(name, desc, block, repeat){
         this.name = name;
         this.desc = desc;
         this.block = block;
+        this.repeat = repeat;
     }
 }
 
@@ -139,12 +141,25 @@ var availableActions = {
 };
 
 // PLAYER
+var workoutQueue = [];
 var playQueue = [];
+
+var workoutStartNotify = [];
+
 var paused = false;
 
 function mainLoop(){
     if(paused){ 
         return;
+     }
+
+     if(playQueue.length === 0){
+         if(workoutQueue.length > 0){
+             var workout = workoutQueue.shift();
+             playQueue.push(workout.block);
+
+             workoutStartNotify.forEach(function(entry){ entry(); });
+         }
      }
 
     if(playQueue.length > 0){
