@@ -1,4 +1,4 @@
-const step = 1000;
+const step = 100;
 
 class Action{
     constructor(name = "Action", actualAction){
@@ -20,6 +20,7 @@ class SleepAction extends Action{
     }
 
     run(){
+        //console.log("Sleep action step");
         if(this.ms <= 0){
             this.ms = this.initialMs;
         }
@@ -45,13 +46,20 @@ class Block extends Action{
         super(name, actions);
         this.repeat = repeat;
         this.desc = desc;
+
+        this.run.bind(this);
     }
     
     run(){
+        console.log('unpacking block to full extent');
+        var reps = 1;
         while(this.repeat()){
+            reps++;
             this.actualAction = this.actualAction.concat(this.actualAction);
         }
-        return this.actualAction; //kindof a flatmap
+        console.log('block repeated times: '+ reps);
+        console.log('actual action: ' + this.actualAction);
+        return this.actualAction; //kindof a flatmap with depth of 1
     }
 }
 
@@ -65,8 +73,10 @@ function actionProvider(actionPickingBehavior, actions){
 
 class FlowSplitter extends Action{
     constructor(name = "Flow Splitter", actionProvider){
-        super(name);
+        super(name, function(){});
         this.actionProvider = actionProvider;
+
+        this.run.bind(this);
     }
 
     get name(){
@@ -82,8 +92,17 @@ class Workout{
     constructor(name, desc, block, repeat){
         this.name = name;
         this.desc = desc;
-        this.block = block;
+        this.actualBlock = block;
         this.repeat = repeat;
+    }
+
+    set block(newBlock){
+        this.actualBlock = newBlock;
+    }
+
+    get block(){
+        console.log("workout.block requested, creating 2 nested blocks");
+        return new Block(this.actualBlock.name, [new Block(this.actualBlock.name, this.actualBlock.actualAction, this.actualBlock.repeat)], this.repeat);
     }
 }
 
@@ -166,10 +185,7 @@ function mainLoop(){
 
          if(workoutQueue.length > 0){
              var workout = workoutQueue.shift();
-             playQueue.push(workout.block);
-             while(workout.repeat()){
-                playQueue.push(workout.block);
-             }
+             playQueue.unshift(workout.block);
              playQueueEmptyPrev === false;
          }    
      }
@@ -178,13 +194,17 @@ function mainLoop(){
         var entry = playQueue.shift();
         var candidate = entry.run();
         if(typeof(candidate) === 'boolean'){
+            console.log('candidate is sleep action');
             if(!candidate){//should be a sleep action
                 playQueue.unshift(entry);
             }
         }else if(candidate && candidate.constructor === Array){
+            console.log('candidate is block');
             candidate.reverse().forEach(function(entry) {
                 playQueue.unshift(entry);
             });
+        }else{
+            console.log('candidate is ????');
         }
     }//else keep waitin
 }
