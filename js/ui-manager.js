@@ -8,16 +8,19 @@ const playGlyphHTML = '<span class="glyphicon glyphicon-play" aria-hidden="true"
 queueActions.appendChild(startStopButton());
 queueActions.appendChild(clearQueueButton());
 
+showPopularWorkouts();
+
 function showEmptyWorkoutTable(){
     queueTable.innerHTML = "";
 
    [0,1,2,3,4].forEach(function(n){
         var row = queueTable.insertRow(n);
         var indexCell = row.insertCell(0);
-        indexCell.innerHTML = n + 1;
         var nameCell = row.insertCell(1);
         row.insertCell(2);
     });
+    checkAutoStop();
+    autosetQueueTableIndices();
 }
 
 showEmptyWorkoutTable();
@@ -50,10 +53,6 @@ function clearQueuePressed(){
         closeOnConfirm: true
     },
     function(){//success callback
-        if(!paused){
-            startStopPressed(queueActions.firstElementChild);
-        }
-
         //must reset repeats and timers on current playQueue action if its a timer or a repeat
         if(playQueue.length > 0){
             var entry = playQueue.shift();
@@ -67,7 +66,10 @@ function clearQueuePressed(){
 
         playQueue = [];
         workoutQueue = [];
+
         showEmptyWorkoutTable();
+        checkAutoStop();
+
         return true;
     });
 }
@@ -118,13 +120,11 @@ function startStopPressed(button){
 }
 
 function showPopularWorkouts(){
+    workoutBox.innerHTML = "";
     availableWorkouts.slice(0,20).forEach(function(entry) {
-        workoutBox.innerHTML = "";
         workoutBox.appendChild(buttonFromWorkout(entry));
     });
 }
-
-showPopularWorkouts();
 
 function buttonFromWorkout(block){
     var button = document.createElement("button"); 
@@ -177,7 +177,6 @@ function workoutPickConfirmationAlert(block){
                     validRowIndex = queueTable.childElementCount;
 
                     var indexCell = validRow.insertCell(0);
-                    indexCell.innerHTML = validRowIndex + 1;
                     
                     validRow.insertCell(1);
                     validRow.insertCell(2);
@@ -189,12 +188,62 @@ function workoutPickConfirmationAlert(block){
                 if(validRowIndex === 0){
                     actionsCell.appendChild(playGlyph());
                 }
-                //add cancel action
 
+                //add cancel action
+                var cancelButton = document.createElement('button');
+                cancelButton.classList.add('btn', 'btn-danger');
+
+                var span = document.createElement('span');
+                span.classList.add('glyphicon', 'glyphicon-remove-sign');
+                span.setAttribute('aria-hidden', true);
+
+                cancelButton.appendChild(span);
+
+                cancelButton.onclick = function(){
+                    paused = true;
+                    swal({
+                        title: "Are you sure you want to remove this workout?",
+                        text: '"' + workout.name + '" is going to be removed from the queue.',
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Remove Workout",
+                        closeOnConfirm: true
+                        },
+                        function(){
+                            cancelWorkoutOnQueuePressed(workout.name, inputValue, validRowIndex);
+                            paused = false;
+                        });
+                };
+
+                actionsCell.appendChild(cancelButton);
+                autosetQueueTableIndices();
                 return true;
             }
         }
     );
+}
+
+function cancelWorkoutOnQueuePressed(name, repeats, greatestPossibleIndex){
+    var workoutIndex = -1;
+    for (var i = 0, row; row = queueTable.rows[i]; i++) {
+        if(i > greatestPossibleIndex){ break; }
+        if(row.cells[1].innerHTML === (name + ' (x' + repeats + ')')){
+            workoutIndex = i;
+        }
+    }
+    if(workoutIndex === 0){//if at top of table / currently playing
+        queueTable.firstElementChild.remove();
+        playQueue = [];
+        shiftPlayButtonToNewFirstRow();
+    }else if(workoutIndex > 0){//scheduled to play
+        queueTable.deleteRow(workoutIndex);
+        var targetWorkoutQueueIndex = workoutIndex - 1;
+        workoutQueue.splice(targetWorkoutQueueIndex, 1);
+    }
+
+    appendEmptyLinesToQueueTable();
+    autosetQueueTableIndices();
 }
 
 function playGlyph(){
@@ -206,19 +255,40 @@ function playGlyph(){
 
 workoutEndNotify.push(function(){
         queueTable.firstElementChild.remove();
-        if(queueTable.childElementCount < 5){//append an empty line
-            var row = queueTable.insertRow(queueTable.childElementCount);
-            var indexCell = row.insertCell(0);
-            indexCell.innerHTML = queueTable.childElementCount;
-            row.insertCell(1);
-            row.insertCell(2);
-        }
-        if(playQueue.length > 0){
-            //shift play button to the below table row
-            var lastCell = queueTable.firstElementChild.lastElementChild;
-            var curHTML = lastCell.innerHTML;
-            lastCell.innerHTML = "";
-            lastCell.appendChild(playGlyph());
-            lastCell.innerHTML += " " + curHTML;
-        }
+        shiftPlayButtonToNewFirstRow();
+        autosetQueueTableIndices();
 });
+
+function shiftPlayButtonToNewFirstRow(){
+    if(playQueue.length > 0){
+        //shift play button to the below table row
+        var lastCell = queueTable.firstElementChild.lastElementChild;
+        var curHTML = lastCell.innerHTML;
+        lastCell.innerHTML = "";
+        lastCell.appendChild(playGlyph());
+        lastCell.innerHTML += " " + curHTML;
+    }
+}
+
+function autosetQueueTableIndices(){
+    for (var i = 0, row; row = queueTable.rows[i]; i++) {
+         row.cells[0] = i + 1;
+    }
+}
+
+function appendEmptyLinesToQueueTable(){
+    while(queueTable.childElementCount < 5){//append an empty line
+        var row = queueTable.insertRow(queueTable.childElementCount);
+        var indexCell = row.insertCell(0);
+        row.insertCell(1);
+        row.insertCell(2);
+    }
+}
+
+function checkAutoStop(){
+    if(playQueue.length === 0 && workoutQueue.length === 0){
+        if(!paused){
+            startStopPressed(queueActions.firstElementChild);
+        }
+    }
+}

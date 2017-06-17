@@ -1,4 +1,4 @@
-const step = 100;
+const step = 20;//in miliseconds
 
 class Action{
     constructor(name = "Action", actualAction){
@@ -58,7 +58,6 @@ class Block extends Action{
             this.actualAction = this.actualAction.concat(this.actualAction);
         }
         console.log('block repeated times: '+ reps);
-        console.log('actual action: ' + this.actualAction);
         return this.actualAction; //kindof a flatmap with depth of 1
     }
 }
@@ -102,7 +101,7 @@ class Workout{
 
     get block(){
         console.log("workout.block requested, creating 2 nested blocks");
-        return new Block(this.actualBlock.name, [new Block(this.actualBlock.name, this.actualBlock.actualAction, this.actualBlock.repeat)], this.repeat);
+        return new Block(this.actualBlock.name, this.actualBlock.run(), this.repeat);
     }
 }
 
@@ -176,9 +175,10 @@ function mainLoop(){
         return;
      }
 
+     //workout
      if(playQueue.length === 0){
-
          if(playQueueEmptyPrev === false){
+            console.log('workout ended');
             workoutEndNotify.forEach(function(entry){ entry(); });
             playQueueEmptyPrev === true;
          }
@@ -189,12 +189,14 @@ function mainLoop(){
              playQueueEmptyPrev === false;
          }    
      }
+     playQueueEmptyPrev = (playQueue.length === 0);
 
+     //playQueue
     if(playQueue.length > 0){
         var entry = playQueue.shift();
         var candidate = entry.run();
         if(typeof(candidate) === 'boolean'){
-            console.log('candidate is sleep action');
+            //console.log('candidate is sleep action');
             if(!candidate){//should be a sleep action
                 playQueue.unshift(entry);
             }
@@ -203,14 +205,11 @@ function mainLoop(){
             candidate.reverse().forEach(function(entry) {
                 playQueue.unshift(entry);
             });
-        }else{
-            console.log('candidate is ????');
         }
     }//else keep waitin
 }
 
 setInterval(mainLoop, step);
-
 
 // BUILDERS
 
