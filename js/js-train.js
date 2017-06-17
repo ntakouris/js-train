@@ -130,7 +130,9 @@ function playSound(sound){
 
 function textToSpeech(text){
     return function (){
-        window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+        var msg = new SpeechSynthesisUtterance(text);
+        msg.volume = 1;
+        window.speechSynthesis.speak(msg);
     }
 }
 
@@ -144,7 +146,9 @@ var availableActions = {
 var workoutQueue = [];
 var playQueue = [];
 
-var workoutStartNotify = [];
+var playQueueEmptyPrev = true;
+
+var workoutEndNotify = [];
 
 var paused = false;
 
@@ -154,12 +158,20 @@ function mainLoop(){
      }
 
      if(playQueue.length === 0){
+
+         if(playQueueEmptyPrev === false){
+            workoutEndNotify.forEach(function(entry){ entry(); });
+            playQueueEmptyPrev === true;
+         }
+
          if(workoutQueue.length > 0){
              var workout = workoutQueue.shift();
              playQueue.push(workout.block);
-
-             workoutStartNotify.forEach(function(entry){ entry(); });
-         }
+             while(workout.repeat()){
+                playQueue.push(workout.block);
+             }
+             playQueueEmptyPrev === false;
+         }    
      }
 
     if(playQueue.length > 0){

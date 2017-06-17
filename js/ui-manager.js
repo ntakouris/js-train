@@ -6,6 +6,21 @@ const removeGlyphHTML = '<span class="glyphicon glyphicon-remove-sign" aria-hidd
 const playGlyphHTML = '<span class="glyphicon glyphicon-play" aria-hidden="true"> </span>';
 
 queueActions.appendChild(startStopButton());
+queueActions.appendChild(clearQueueButton());
+
+function showEmptyWorkoutTable(){
+    queueTable.innerHTML = "";
+
+   [0,1,2,3,4].forEach(function(n){
+        var row = queueTable.insertRow(n);
+        var indexCell = row.insertCell(0);
+        indexCell.innerHTML = n + 1;
+        var nameCell = row.insertCell(1);
+        row.insertCell(2);
+    });
+}
+
+showEmptyWorkoutTable();
 
 //will probably never use it
 function workoutSelectHintDiv(){
@@ -14,6 +29,47 @@ function workoutSelectHintDiv(){
     div.classList.add("col-xs-6", "alert", "alert-info");
     div.innerHTML = "Please choose a workout to get started";
     return div;
+}
+
+function clearQueueButton(){
+    var button = document.createElement('button');
+    button.classList.add('btn', 'btn-danger', 'pull-right');
+    button.innerHTML = "Clear Queue";
+    button.onclick = clearQueuePressed;
+    return button;
+}
+
+function clearQueuePressed(){
+    swal({
+        title: "Are you sure you want to clear the queue?",
+        text: "This will stop the flow and remove all the workouts from it.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Clear Queue",
+        closeOnConfirm: true
+    },
+    function(){//success callback
+        if(!paused){
+            startStopPressed(queueActions.firstElementChild);
+        }
+
+        //must reset repeats and timers on current playQueue action if its a timer or a repeat
+        if(playQueue.length > 0){
+            var entry = playQueue.shift();
+            var candidate = entry.run();
+            if(typeof(candidate) === 'boolean'){
+                if(!candidate){//should be a sleep action
+                    while(!entry.run()){}
+                }
+            }//block unpacks itself and resets repeat()
+        }
+
+        playQueue = [];
+        workoutQueue = [];
+        showEmptyWorkoutTable();
+        return true;
+    });
 }
 
 function startStopButton(){
@@ -31,6 +87,13 @@ function startStopButton(){
 }
 
 function startStopPressed(button){
+
+    if(paused){
+        if(!(workoutQueue.length > 0 || playQueue.length > 0)){
+            swal("You need to add workouts to the queue first in order to play them!");
+        }
+    }
+
     paused = !paused;
 
     button.innerHTML = "";
@@ -54,10 +117,8 @@ function startStopPressed(button){
     }
 }
 
-//var newRow = tableRef.insertRow(tableRef.rows.length);
-
 function showPopularWorkouts(){
-    availableWorkouts.slice(0,10).forEach(function(entry) {
+    availableWorkouts.slice(0,20).forEach(function(entry) {
         workoutBox.innerHTML = "";
         workoutBox.appendChild(buttonFromWorkout(entry));
     });
@@ -90,7 +151,7 @@ function workoutPickConfirmationAlert(block){
     animation: "slide-from-top",
     inputPlaceholder: "How much times do you want to play the workout?",
     confirmButtonText: "Add to Queue",
-    cancelButtonText: "Cancel"
+    cancelButtonText: "Cancel",
     },
         function(inputValue){        
             if (!isInt(inputValue)) {
@@ -100,13 +161,64 @@ function workoutPickConfirmationAlert(block){
                 var times = parseInt(Number(inputValue));
                 var workout = new Workout(block.name, block.desc, block, repeat(times));
                 workoutQueue.push(workout);
+
+                var validRow = null;
+                var validRowIndex = -1;
+                for (var i = 0, row; row = queueTable.rows[i]; i++) {
+                    if(row.cells[1].innerHTML === ""){
+                        validRow = row;
+                        validRowIndex = i;
+                        break;
+                    }
+                }
+
+                if(validRow == null){
+                    validRow = queueTable.insertRow(queueTable.childElementCount);
+                    validRowIndex = queueTable.childElementCount;
+
+                    var indexCell = validRow.insertCell(0);
+                    indexCell.innerHTML = validRowIndex + 1;
+                    
+                    validRow.insertCell(1);
+                    validRow.insertCell(2);
+                }
+
+                validRow.cells[1].innerHTML = workout.name + ' (x' + inputValue + ')';
+
+                var actionsCell = validRow.cells[2];
+                if(validRowIndex === 0){
+                    actionsCell.appendChild(playGlyph());
+                }
+                //add cancel action
+
                 return true;
             }
         }
     );
 }
 
-workoutStartNotify.push(function(){
-    //remove top row from queue table
+function playGlyph(){
+    var span = document.createElement('span');
+    span.classList.add('glyphicon', 'glyphicon-play');
+    span.setAttribute('aria-hidden', 'true');
+    return span;
+}
 
+workoutEndNotify.push(function(){
+        queueTable.firstElementChild.remove();
+        if(queueTable.childElementCount < 5){//append an empty line
+            var row = queueTable.insertRow(queueTable.childElementCount);
+            var indexCell = row.insertCell(0);
+            indexCell.innerHTML = queueTable.childElementCount;
+            row.insertCell(1);
+            row.insertCell(2);
+        }
+        if(playQueue.length > 0){
+            //shift play button to the below table row
+            var lastCell = queueTable.firstElementChild.lastElementChild;
+            var curHTML = lastCell.innerHTML;
+            lastCell.innerHTML = "";
+            lastCell.appendChild(playGlyph());
+            lastCell.innerHTML += " " + curHTML;
+        }
 });
