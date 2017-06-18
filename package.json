@@ -1,0 +1,30 @@
+{
+  "name": "js-train",
+  "version": "1.0.0",
+  "description": "Training timer/coach freeware",
+  "main": "js/app.js",
+  "dependencies": {},
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.24.1",
+    "nodemon": "^1.11.0"
+  },
+  "scripts": {
+    "start": "nodemon lib/index.js --exec babel-node",
+    "build": "babel lib -d dist",
+    "serve": "node dist/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Zarkopafilis/js-train.git"
+  },
+  "author": "Theodoros Ntakouris",
+  "license": "WTF",
+  "bugs": {
+    "url": "https://github.com/Zarkopafilis/js-train/issues"
+  },
+  "homepage": "https://github.com/Zarkopafilis/js-train#readme"
+}

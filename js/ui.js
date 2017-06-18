@@ -1,3 +1,6 @@
+import * from 'train';
+import * from 'resources';
+
 var queueTable = document.getElementById('queue-table').getElementsByTagName('tbody')[0];
 var workoutBox = document.getElementById('workout-box');
 var queueActions = document.getElementById('queue-actions');

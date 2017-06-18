@@ -1,3 +1,5 @@
+import * from 'js-train';
+
 var availableSounds = ['beep']
 
 // PRESETS
