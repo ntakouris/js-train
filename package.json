@@ -1,6 +1,10 @@
 {
   "name": "js-train",
   "version": "1.0.0",
+  "engines": {
+    "node": "6.11.0",
+    "npm" : "3.10.10"
+  },
   "description": "Training timer/coach freeware",
   "dependencies": {},
   "devDependencies": {
@@ -12,11 +16,11 @@
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.1",
     "gulp-nodemon": "^2.2.1",
-    "gulp-sourcemaps": "^2.6.0",
-    "nodemon": "^1.11.0"
+    "gulp-sourcemaps": "^2.6.0"
   },
   "scripts": {
-    "start": "gulp build && http-server /dist -p ${PORT}",
+    "start": "http-server /dist -p ${PORT}",
+    "postinstall": "gulp build",
     "build": "gulp build",
     "serve": "http-server /dist -p 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
