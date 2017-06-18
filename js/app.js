@@ -1,9 +1,11 @@
-import {train, resources, ui} from '.';
+import * as train from 'train';
+import * as resources from 'resources';
+import * as ui from 'ui';
+
 import http from 'http';
 
 http.createServer((req, res) => {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.end('Hello World\n');
+  //what now?
 }).listen(8080, 'localhost');
 
 console.log('Server running at http://localhost:8080/');

@@ -1,5 +1,5 @@
-import * from 'train';
-import * from 'resources';
+import * as train from 'train';
+import * as resources from 'resources';
 
 var queueTable = document.getElementById('queue-table').getElementsByTagName('tbody')[0];
 var workoutBox = document.getElementById('workout-box');
@@ -124,7 +124,7 @@ function startStopPressed(button){
 
 function showPopularWorkouts(){
     workoutBox.innerHTML = "";
-    availableWorkouts.slice(0,20).forEach(function(entry) {
+    resources.availableWorkouts.slice(0,20).forEach(function(entry) {
         workoutBox.appendChild(buttonFromWorkout(entry));
     });
 }
@@ -162,7 +162,7 @@ function workoutPickConfirmationAlert(block){
                 return false;
             }else{
                 var times = parseInt(Number(inputValue));
-                var workout = new Workout(block.name, block.desc, block, repeat(times));
+                var workout = new train.Workout(block.name, block.desc, block, repeat(times));
                 workoutQueue.push(workout);
 
                 var validRow = null;

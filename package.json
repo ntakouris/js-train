@@ -12,8 +12,8 @@
     "nodemon": "^1.11.0"
   },
   "scripts": {
-    "start": "nodemon lib/index.js --exec babel-node",
-    "build": "babel lib -d dist",
+    "start": "nodemon js/app.js --exec babel-node",
+    "build": "babel js -d dist",
     "serve": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
