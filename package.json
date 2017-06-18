@@ -16,9 +16,9 @@
     "nodemon": "^1.11.0"
   },
   "scripts": {
-    "start": "npm install http-server -g && gulp build && http-server /dist",
+    "start": "gulp build && http-server /dist -p ${PORT}",
     "build": "gulp build",
-    "serve": "http-server /dist -p ${PORT}",
+    "serve": "http-server /dist -p 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
