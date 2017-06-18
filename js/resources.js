@@ -1,7 +1,6 @@
 var availableSounds = ['beep']
 
 // PRESETS
-
 var beepAction = new Action("Beep" , playSound("beep"));
 var boxingBagPreset = new Block("Boxing Bag 15-15-15-15", [     new SleepAction(2000),
                                                                         beepAction, 

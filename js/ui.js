@@ -121,7 +121,7 @@ function startStopPressed(button){
 
 function showPopularWorkouts(){
     workoutBox.innerHTML = "";
-    resources.availableWorkouts.slice(0,20).forEach(function(entry) {
+    availableWorkouts.slice(0,20).forEach(function(entry) {
         workoutBox.appendChild(buttonFromWorkout(entry));
     });
 }

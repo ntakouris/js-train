@@ -11,10 +11,9 @@ gulp.task('html', function(){
 
 //babel-build
 gulp.task('babuild', function(){
-    return gulp.src('js/**')
+    return gulp.src(['train.js', 'resource.js', 'ui.js'])
     .pipe(babel({presets: ['es2015']}))
     .pipe(concat('all.js'))
-    .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('dist/js'))
 });
 
@@ -24,18 +23,12 @@ gulp.task('resources', function(){
 });
 
 gulp.task('build', [ 'html', 'babuild', 'resources' ]);
-gulp.task('default', ['build']);
+gulp.task('default', ['build', 'watch']);
 
 gulp.task('watch', function() {
-  gulp.watch('js/**/*.js', ['scripts']);
+  gulp.watch('js/**/*.js', ['babuild']);
   gulp.watch('index.html', ['html']);
+  gulp.watch('resources/**', ['resources']);
 });
 
-gulp.task('server', function() {
-  var server = child.spawn('node', ['dist/app.js']);
-  var log = fs.createWriteStream('server.log', {flags: 'a'});
-  server.stdout.pipe(log);
-  server.stderr.pipe(log);
-});
-
-gulp.task('start', ['server', 'watch']);
+gulp.task('start', ['default', 'watch']);

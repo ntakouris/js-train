@@ -2,7 +2,6 @@
   "name": "js-train",
   "version": "1.0.0",
   "description": "Training timer/coach freeware",
-  "main": "js/app.js",
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -17,9 +16,9 @@
     "nodemon": "^1.11.0"
   },
   "scripts": {
-    "start": "gulp start",
+    "start": "gulp build && http-server /dist",
     "build": "gulp build",
-    "serve": "node dist/app.js",
+    "serve": "http-server /dist -p ${PORT}",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
