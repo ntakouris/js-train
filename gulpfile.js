@@ -10,12 +10,20 @@ gulp.task('html', function(){
 });
 
 //babel-build
-gulp.task('babuild', function(){
-    return gulp.src(['train.js', 'resource.js', 'ui.js'])
+gulp.task('babuild-lib', function(){
+    return gulp.src(['js/train.js', 'js/resources.js', 'js/ui.js'])
     .pipe(babel({presets: ['es2015']}))
     .pipe(concat('all.js'))
     .pipe(gulp.dest('dist/js'))
 });
+
+gulp.task('babuild-app', function(){
+    return gulp.src(['app.js'])
+    .pipe(babel({presets: ['es2015']}))
+    .pipe(gulp.dest('dist'))
+});
+
+gulp.task('babuild', ['babuild-lib', 'babuild-app']);
 
 gulp.task('resources', function(){
   return gulp.src('resources/**')

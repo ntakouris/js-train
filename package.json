@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "engines": {
     "node": "6.11.0",
-    "npm" : "3.10.10"
+    "npm": "3.10.10"
   },
   "description": "Training timer/coach freeware",
   "dependencies": {
@@ -11,18 +11,17 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-register": "^6.24.1",
+    "express": "^4.15.3",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-concat": "^2.6.1",
     "gulp-nodemon": "^2.2.1",
     "gulp-sourcemaps": "^2.6.0"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "scripts": {
-    "start": "http-server /dist -p ${PORT}",
+    "start": "node dist/app.js",
     "postinstall": "gulp build",
-    "build": "gulp build",
     "serve": "http-server /dist -p 8080",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
