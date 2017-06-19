@@ -1,6 +1,8 @@
 var queueTable = document.getElementById('queue-table').getElementsByTagName('tbody')[0];
 var workoutBox = document.getElementById('workout-box');
 var queueActions = document.getElementById('queue-actions');
+var searchTextBox = document.getElementById('workout-keywords');
+var clearKeywordsButton = document.getElementById('clear-keywords');
 
 const removeGlyphHTML = '<span class="glyphicon glyphicon-remove-sign" aria-hidden="true"> </span>';
 const playGlyphHTML = '<span class="glyphicon glyphicon-play" aria-hidden="true"> </span>';
@@ -8,7 +10,30 @@ const playGlyphHTML = '<span class="glyphicon glyphicon-play" aria-hidden="true"
 queueActions.appendChild(startStopButton());
 queueActions.appendChild(clearQueueButton());
 
+searchTextBox.addEventListener("input", function (e) {
+    searchInputChange(this.value);
+});
+
+clearKeywordsButton.onclick = function(){
+    searchTextBox.value = "";
+    showPopularWorkouts();
+}
+
+function searchInputChange(input){
+    if(!input || /^\s*$/.test(input) || input.length === 0 || !input.trim()){//is blank?
+        showPopularWorkouts();
+    }else{
+        var matchingWorkouts = searchWorkoutsByKeywords(input);
+        workoutBox.innerHTML = "";
+        matchingWorkouts.forEach(function(entry){
+            var button = buttonFromWorkout(entry);
+            workoutBox.appendChild(button);
+        });
+    }
+}
+
 showPopularWorkouts();
+showEmptyWorkoutTable();
 
 function showEmptyWorkoutTable(){
     queueTable.innerHTML = "";
@@ -22,8 +47,6 @@ function showEmptyWorkoutTable(){
     checkAutoStop();
     autosetQueueTableIndices();
 }
-
-showEmptyWorkoutTable();
 
 //will probably never use it
 function workoutSelectHintDiv(){
@@ -292,3 +315,4 @@ function checkAutoStop(){
         }
     }
 }
+

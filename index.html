@@ -52,10 +52,17 @@
 
         <div id="search-workouts" class="col-xs-12">
             <h2>Workout Selector</h1>
-            <div class="form-group">
-                <label for="workout-name">Search by Name:</label>
-                <input type="text" class="form-control" id="workout-name">
+
+            <div class="input-group">
+                <label for="workout-keywords">Search by Name:</label>
+                <input type="text" class="form-control" id="workout-keywords" placeholder="keyword, keyword, keyword...">
+
+                <span class="input-group-btn">
+                    <button class="btn btn-info" type="button" id="clear-keywords">Clear</button>
+                </span>
             </div>
+
+
             <h3>Popular Workouts</h3>
             <hr>
             <div id="workout-box" class="list-group"></div>
