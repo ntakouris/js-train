@@ -19,7 +19,28 @@ var boxingBagPreset = new Block("Boxing Bag 15-15-15-15", [     new SleepAction(
 var waitPreset = new Block("Wait 1 second", [new SleepAction(1000)] , repeat(1));
 var beepPreset = new Block("Beep", [new SleepAction(1000), beepAction], repeat(1));
 
-var availableWorkouts = [waitPreset, beepPreset, boxingBagPreset];
+var boxingBagDSL = 
+`#Boxing Bag 15-15-15-15
+#Boxing: 15 FOOTWORK - 15 TECHNIQUE - 15 SPEED - 15 POWER - 15 REST
+{
+sleep 2
+beep
+}3
+sleep 2
+say FOOTWORK
+sleep 2
+say TECHNIQUE
+sleep 2
+say SPEED
+sleep 2
+say POWER
+sleep 2
+say REST
+sleep 2`;
+
+var boxingBag2 = trainDSLParser(boxingBagDSL);
+
+var availableWorkouts = [waitPreset, beepPreset, boxingBagPreset, boxingBag2];
 
 function searchWorkoutsByKeywords(keywords){
       var keys = keywords.split(",").map(s => s.trim());

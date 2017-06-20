@@ -12,6 +12,27 @@ class Action{
     }
 }
 
+class SleepOffsetAction extends Action{
+    constructor(ms, offset){
+        super("Sleep: " + ms + " - Offset: " + offset);
+        this.ms = ms;
+        this.offset = offset;
+        this.currentOffset = getRandomInt(-offset, offset);
+        this.initialMs = ms;
+    }
+
+    run(){
+        //console.log("Sleep action step");
+        if(this.ms <= this.currentOffset){
+            this.ms = this.initialMs;
+            //reset => recalculate new margin
+            this.currentOffset = getRandomInt(-offset, offset);
+        }
+        this.ms = this.ms - step;
+        return this.ms <= this.currentOffset;
+    }
+}
+
 class SleepAction extends Action{
     constructor(ms){
         super("Sleep " + ms);
@@ -140,10 +161,18 @@ function waitSeconds(seconds){
     return new SleepAction(seconds * 1000);
 }
 
+function waitSecondsOffset(seconds, offset){
+    return new SleepOffsetAction(seconds * 1000, offset * 1000);
+}
+
 function playSound(sound){
     return function(){
         document.getElementById(sound).play();
     }
+}
+
+function playBeepAction(){
+    return new Action("beep", playSound("beep"));
 }
 
 function textToSpeech(text){
@@ -152,6 +181,11 @@ function textToSpeech(text){
         msg.volume = 1;
         window.speechSynthesis.speak(msg);
     }
+}
+
+function textToSpeechAction(text){
+    var actualAction = textToSpeech(text);
+    return new Action(text, actualAction);
 }
 
 var availableActions = {
@@ -212,3 +246,67 @@ function mainLoop(){
 setInterval(mainLoop, step);
 
 // BUILDERS
+
+// DSL
+function trainDSLParser(contents){
+    const actionMap = {
+        "beep" : playBeepAction,
+        "say" : textToSpeechAction,
+        "sleep" : waitSeconds,
+        "sleepOffset" : waitSecondsOffset
+    }
+
+    var lines = contents.split("\n").map(s => s.trim());
+    console.log(lines);
+    var blockIndex = 0;
+
+    var contents = {
+        0 : []
+    };
+    var title;
+    var description;
+    lines.forEach(function(line){
+        if(line.trim() === ""){
+
+        }else if(line.startsWith("#")){//comment. First comment = title
+            if(title === undefined){
+                title = line.slice(1);
+            }else if(description === undefined){
+                description = line;
+            }
+        }else if(line.startsWith("{") || line.startsWith("}")){//start block parsing
+            if(line.startsWith("{")){//block start
+                blockIndex++;
+                console.log("block started with new index of: " + blockIndex);
+                contents[blockIndex] = [];
+            }else if(line.startsWith("}")){//block end
+                var reps = 1;
+                if(line.length > 1){
+                    reps = line.slice(1);
+                }
+
+                var block = new Block(contents[blockIndex][0].name , contents[blockIndex], repeat(reps))
+                var currentBlocksContents = [block];
+                console.log("block with index: " + blockIndex + " ended. Contents: ");
+                console.log(block);
+                contents[--blockIndex].push[currentBlocksContents];
+            }
+        }else{
+            var parts = line.split(" ");
+
+            if(parts[0] === "beep"){
+                contents[blockIndex].push(actionMap[parts[0]]());
+            }else{
+                var parts = line.split(" ");
+                var parsed = actionMap[parts[0]].apply(null, parts.slice(1));
+                console.log(parsed);
+                contents[blockIndex].push(parsed);
+            }
+        }
+    });
+
+    //push everything from index 0 (root block) to new block in order to preserve repetitions;
+    var result = new Block(title === undefined ? "Unnamed Block" : title, contents[0], repeat(1), description === undefined ? "No Description" : description);
+    console.log(result);
+    return result;
+}

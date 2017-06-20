@@ -1,5 +1,5 @@
-const port = process.env.PORT;
-//const port = 8080;
+//const port = process.env.PORT;
+const port = 8080;
 const path = require('path')
 const express = require('express')
 const app = express()
