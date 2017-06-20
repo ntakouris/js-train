@@ -6,7 +6,7 @@ const app = express()
 
 app.use('/index.html', express.static('./index.html'));
 app.use('/js', express.static(path.join(__dirname + '/js')));
-app.use('/resources', express.static(path.join(__dirname + '/public')));
+app.use('/resources', express.static(path.join(__dirname + '/resources')));
 
 app.get('/', function (req, res) {
   res.redirect('/index.html')
