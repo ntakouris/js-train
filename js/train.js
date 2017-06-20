@@ -272,12 +272,11 @@ function trainDSLParser(contents){
             if(title === undefined){
                 title = line.slice(1);
             }else if(description === undefined){
-                description = line;
+                description = line.slice(1);
             }
         }else if(line.startsWith("{") || line.startsWith("}")){//start block parsing
             if(line.startsWith("{")){//block start
                 blockIndex++;
-                console.log("block started with new index of: " + blockIndex);
                 contents[blockIndex] = [];
             }else if(line.startsWith("}")){//block end
                 var reps = 1;
@@ -285,11 +284,9 @@ function trainDSLParser(contents){
                     reps = line.slice(1);
                 }
 
-                var block = new Block(contents[blockIndex][0].name , contents[blockIndex], repeat(reps))
-                var currentBlocksContents = [block];
-                console.log("block with index: " + blockIndex + " ended. Contents: ");
-                console.log(block);
-                contents[--blockIndex].push[currentBlocksContents];
+                var block = new Block("Block" , contents[blockIndex], repeat(reps));
+                blockIndex--;
+                contents[blockIndex].push(block);
             }
         }else{
             var parts = line.split(" ");
@@ -298,8 +295,13 @@ function trainDSLParser(contents){
                 contents[blockIndex].push(actionMap[parts[0]]());
             }else{
                 var parts = line.split(" ");
-                var parsed = actionMap[parts[0]].apply(null, parts.slice(1));
-                console.log(parsed);
+                var parsed;
+                if(parts[0].startsWith("say")){
+                    var params = parts.slice(1).reduce( (prev, cur) => prev + " " + cur, "");
+                    parsed = actionMap[parts[0]].apply(null, [params]);
+                }else{
+                    parsed = actionMap[parts[0]].apply(null, parts.slice(1));
+                }
                 contents[blockIndex].push(parsed);
             }
         }

@@ -46,7 +46,7 @@ In general, there are 4 ways to create a block of actions:
     3. Use the DSL which is better explained by opening up the `index.html` in a browser
     4. Using the interactive visual editor (which generates the DSL)
 
-2,3,4 Are currently under development.
+2 and 4 Are currently under development.
 
 ## Pull Requests
 PRs are much welcome; especially if they are preset workouts!

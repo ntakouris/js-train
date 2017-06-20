@@ -280,6 +280,7 @@ workoutEndNotify.push(function(){
         queueTable.firstElementChild.remove();
         shiftPlayButtonToNewFirstRow();
         autosetQueueTableIndices();
+        checkAutoStop();
 });
 
 function shiftPlayButtonToNewFirstRow(){

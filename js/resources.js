@@ -22,6 +22,10 @@ var beepPreset = new Block("Beep", [new SleepAction(1000), beepAction], repeat(1
 var boxingBagDSL = 
 `#Boxing Bag 15-15-15-15
 #Boxing: 15 FOOTWORK - 15 TECHNIQUE - 15 SPEED - 15 POWER - 15 REST
+say WE START NOW
+sleep 2
+beep
+sleep 2
 {
 sleep 2
 beep
