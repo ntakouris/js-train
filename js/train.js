@@ -246,6 +246,49 @@ function mainLoop(){
 setInterval(mainLoop, step);
 
 // BUILDERS
+class PresetBuilder{
+    constructor(name, description, rootRepeat){
+        this.name = name;
+        this.description = description;
+        this.rootRepeat = rootRepeat;
+
+        this.dsl = "#" + name + "\n#" + description;
+    }
+
+    say(text){
+        this.dsl += "\nsay " + text;
+        return this;
+    }
+
+    beep(){
+        this.dsl += "\nbeep";
+        return this;
+    }
+
+    sleep(seconds){
+        this.dsl += "\nsleep " + seconds;
+        return this;
+    }
+
+    sleepOffset(seconds, offset){
+        this.dsl += "\nsleepOffset " + seconds + " " + offset;
+        return this;
+    }
+
+    block(){
+        this.dsl += "\n{";
+        return this;
+    }
+
+    blockEnd(times = 1){
+        this.dsl += "\n}" + times;
+        return this;
+    }
+
+    build(){
+        return trainDSLParser(this.dsl);
+    }
+}
 
 // DSL
 function trainDSLParser(contents){

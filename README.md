@@ -20,8 +20,11 @@ Currently the app.js is configured with a `const port = process.env.PORT;` to ru
 `/resources` contains various resources, like the beep.mp3
 
 `/js` contains all the actual nuts and bolts of the project:
+
     + `train.js` contains the core of the project (class definitions, the run loop, etc...)
+
     + `resources.js` contains preset actions, blocks and example workouts
+
     + `ui.js` contains all the logic required by the index.html so that the website functions correctly
 
 These are also the reasons why these 3 need to be placed in that correct order in the app.js. (To avoid undefined stuff, mainly)
@@ -46,7 +49,8 @@ In general, there are 4 ways to create a block of actions:
     3. Use the DSL which is better explained by opening up the `index.html` in a browser
     4. Using the interactive visual editor (which generates the DSL)
 
-2 and 4 Are currently under development.
+The Visual Editor is currently under development.
+If you are a programmer and not a user, just check out whatever is into resources.js to get a feel of what is going on fast.
 
 ## Pull Requests
 PRs are much welcome; especially if they are preset workouts!
