@@ -48,7 +48,17 @@ var boxingBagBuilder =
       .sleep(15)
       .build();
 
-var availableWorkouts = [waitPreset, beepPreset, boxingBagPreset];
+//Actual Presets
+var minuteIntervalSparTimer = 
+`# Minute Inteval Timer
+#Beeps every minute
+beep
+sleep 60`;
+
+var availableWorkouts = [waitPreset,
+                         beepPreset, 
+                         boxingBagPreset,
+                         trainDSLParser(minuteIntervalSparTimer)];
 
 function searchWorkoutsByKeywords(keywords){
       var keys = keywords.split(",").map(s => s.trim().toLowerCase());
@@ -65,6 +75,7 @@ function searchWorkoutsByKeywords(keywords){
             });
             return occurences;
       }
+
       return availableWorkouts.filter(function(workout){
             return containsKeyword(workout.name.toLowerCase()) > 0;
       }).sort(function(a,b){

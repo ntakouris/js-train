@@ -351,7 +351,22 @@ function trainDSLParser(contents){
     });
 
     //push everything from index 0 (root block) to new block in order to preserve repetitions;
-    var result = new Block(title === undefined ? "Unnamed Block" : title, contents[0], repeat(1), description === undefined ? "No Description" : description);
+    var result = new Block(title === undefined ? "DSL Block" : title, contents[0], repeat(1), description === undefined ? "No Description" : description);
     console.log(result);
     return result;
+}
+
+//UTIL
+if(localStorage.getItem("workouts") === undefined || localStorage.getItem("workouts") === null || localStorage.getItem("workouts").trim() === ""){
+    localStorage.setItem("workouts", JSON.stringify({}));
+}
+
+function getLocalWorkouts(){
+    return JSON.parse(localStorage.getItem("workouts"));
+}
+
+function addWorkoutToStorage(workout){
+    var wouts = getLocalWorkouts();
+    wouts[workout.name] = workout;
+    localStorage.setItem("workouts", JSON.stringify(wouts));
 }

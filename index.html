@@ -26,14 +26,14 @@
 
     <br />
     <br />
-    <br />
 
     <div class="container">
         <div class="jumbotron">
             <h1>Welcome to js-train</h1>
-            <p>Scroll down to get started, or</p>
+            <p>Scroll down to get started</p>
+            <!--<p>Scroll down to get started, or</p>
             <button type="button" href="#search-workouts" class="btn btn-primary">Pick a Workout</button>
-            <button type="button" href="#create" class="btn btn-success">Create a Workout</button>
+            <button type="button" href="#create" class="btn btn-success">Create a Workout</button>-->
         </div>
 
         <div id="queue" class="col-xs-12">
@@ -52,7 +52,7 @@
         <div id="queue-actions"></div>
 
         <div id="search-workouts" class="col-xs-12">
-            <h2>Workout Selector</h1>
+            <h2>Workout Selector</h2>
             
             <label for="workout-keywords">Search by Name:</label>
             <div class="input-group">
@@ -71,6 +71,60 @@
 
         <div id="create" class="col-xs-12">
             <h2>Workout Maker</h2>
+            <div class="colx-xs-12">
+                <textarea id="dsl-area" rows="15" style="width: 100%;"
+                    placeholder=
+                    "#Workout Name
+                    #Workout Description
+                    beep
+                    sleep 2
+                    say START
+                    {
+                        sleep 10
+                        say SHOOT
+                    }3
+                    sleep 3
+                    say WORKOUT END
+                    sleep 2
+                    beep" required></textarea>
+
+                <br />
+                
+                <div class="col-xs-12">
+                    <button type="button" class="btn btn-success" id="dsl-preview">Play</button>
+                    <button type="button" class="btn btn-info" id="dsl-save" style="visibility: hidden;">Save</button>
+                    <button type="button" class="btn btn-danger" id="dsl-discard">Discard</button>
+                </div>
+            </div>
+
+            <br /><br /><br />
+
+            <h3>How to use</h3>
+            <hr />
+
+            <h4>Each line of the above text area represents either <b>'metadata'</b> or a <b>'command'</b>.</h4>
+
+                <p>The first line you prefix with <b>'#'</b> becomes the title of your new workout.</p>
+
+                <p>The second line you prefix with <b>'#'</b> becomes the expanded description of your new workout.</p>
+
+                <p>Any following lines that you prefix with <b>'#'</b> will get ignored by the parser.</p>
+                <hr />
+                
+                <h4>Available Commands:</h4>
+
+                <p><b>beep</b> => beeps.</p>
+
+                <p><b>sleep X</b> => Waits X seconds before executing the next command.</p>
+
+                <p><b>sleepOffset X O</b> => Waits between X-O and X+O seconds before executing the next command.</p>
+
+                <p><b>say X</b> => Says 'X' via the text-to-speech engine.</p>
+                <hr />
+
+                <h4>Flow Control:</h4>
+
+                <p><b>Blocks</b> => Wrapping commands with <b>{...}N</b> makes these commands a block which will be executed N times</p>
         </div>
 
     </div>

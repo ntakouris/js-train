@@ -5,6 +5,11 @@ var searchTextBox = document.getElementById('workout-keywords');
 var clearKeywordsButton = document.getElementById('clear-keywords');
 var belowSearchText = document.getElementById('below-text');
 
+var dslTextArea = document.getElementById('dsl-area');
+var dslDiscardButton = document.getElementById('dsl-discard');
+var dslSaveButton = document.getElementById('dsl-save');
+var dslPreviewButton = document.getElementById('dsl-preview');
+
 const removeGlyphHTML = '<span class="glyphicon glyphicon-remove-sign" aria-hidden="true"> </span>';
 const playGlyphHTML = '<span class="glyphicon glyphicon-play" aria-hidden="true"> </span>';
 
@@ -19,6 +24,10 @@ clearKeywordsButton.onclick = function(){
     searchTextBox.value = "";
     showPopularWorkouts();
 }
+
+dslDiscardButton.onclick = dslDiscardButtonPressed;
+dslSaveButton.onclick = dslSaveButtonPressed;
+dslPreviewButton.onclick = dslPreviewButtonPressed;
 
 function searchInputChange(input){
     if(!input || /^\s*$/.test(input) || input.length === 0 || !input.trim()){//is blank?
@@ -37,6 +46,59 @@ function searchInputChange(input){
 
 showPopularWorkouts();
 showEmptyWorkoutTable();
+
+function dslDiscardButtonPressed(){
+    swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this workout!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, discard it!",
+        closeOnConfirm: true
+    },
+    function(){
+        dslTextArea.value = "";    
+    });
+}
+
+function dslPreviewButtonPressed(){
+    buttonFromWorkout(trainDSLParser(dslTextArea.value)).click();
+}
+
+function dslSaveButtonPressed(){
+    var newWorkout = trainDSLParser(dslTextArea.value);
+    var workoutWithSameNameExists = getLocalWorkouts[newWorkout.name] === undefined || getLocalWorkouts[newWorkout.name] === null;
+
+    if(workoutWithSameNameExists){
+        swal({
+            title: "Conflict!",
+            text: "A workout with that name already exists, do you want to override it?",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#4CAF50",
+            confirmButtonText: "Save",
+            closeOnConfirm: true
+        },
+        function(){
+            var savedWorkouts = getLocalWorkouts();
+            addWorkoutToStorage(newWorkout);  
+        });
+    }else{
+        swal({
+        title: "Workout Save Dialog",
+        text: "A new workout will be created.",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#4CAF50",
+        confirmButtonText: "Save",
+        closeOnConfirm: true
+    },
+    function(){
+         addWorkoutToStorage(newWorkout);  
+    });
+    }
+}
 
 function showEmptyWorkoutTable(){
     queueTable.innerHTML = "";
@@ -119,9 +181,9 @@ function startStopPressed(button){
     if(paused){
         if(!(workoutQueue.length > 0 || playQueue.length > 0)){
             swal("You need to add workouts to the queue first in order to play them!");
+            return;
         }
     }
-
     paused = !paused;
 
     button.innerHTML = "";
@@ -143,6 +205,8 @@ function startStopPressed(button){
         button.appendChild(span);
         button.innerHTML += " PAUSE";
     }
+
+    checkAutoStop();
 }
 
 function showPopularWorkouts(){
@@ -158,6 +222,7 @@ function buttonFromWorkout(block){
     button.type = "button";
     button.classList.add("list-group-item");
     button.innerHTML = block.name;
+    button.setAttribute("title", block.desc);
     button.onclick = function(){workoutPickConfirmationAlert(block)};
     return button;
 }
