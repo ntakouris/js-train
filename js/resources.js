@@ -51,21 +51,23 @@ var boxingBagBuilder =
 var availableWorkouts = [waitPreset, beepPreset, boxingBagPreset];
 
 function searchWorkoutsByKeywords(keywords){
-      var keys = keywords.split(",").map(s => s.trim());
-      return availableWorkouts.filter(function(entry){
-                  return keys.filter(function(keyword){
-                        keyword.toLowerCase().indexOf(entry.name.toLowerCase()) !== -1;
-                  }).length > 0;
-            }).sort(function(a, b){
-                  function getScore(){
-                        var score = 0;
-                        keys.foreEach(function(keyword){
-                              if(keyword.toLowerCase().indexOf(entry.name.toLowerCase()) !== -1){
-                                    score++;
-                              }
-                        });
-                        return score;
+      var keys = keywords.split(",").map(s => s.trim().toLowerCase());
+
+      function containsKeyword(phrase){
+            var occurences = 0;
+            keys.forEach(function(entry){
+                  if(entry.trim() === ""){
+                        return;
                   }
-                  return getScore(a) - getScore(b);
+                  if((phrase.indexOf(entry) !== -1)){
+                        occurences++;
+                  }
             });
+            return occurences;
+      }
+      return availableWorkouts.filter(function(workout){
+            return containsKeyword(workout.name.toLowerCase()) > 0;
+      }).sort(function(a,b){
+            return containsKeyword(a.name.toLowerCase()) - containsKeyword(b.name.toLowerCase());
+      });
 }

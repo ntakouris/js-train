@@ -3,6 +3,7 @@ var workoutBox = document.getElementById('workout-box');
 var queueActions = document.getElementById('queue-actions');
 var searchTextBox = document.getElementById('workout-keywords');
 var clearKeywordsButton = document.getElementById('clear-keywords');
+var belowSearchText = document.getElementById('below-text');
 
 const removeGlyphHTML = '<span class="glyphicon glyphicon-remove-sign" aria-hidden="true"> </span>';
 const playGlyphHTML = '<span class="glyphicon glyphicon-play" aria-hidden="true"> </span>';
@@ -23,6 +24,8 @@ function searchInputChange(input){
     if(!input || /^\s*$/.test(input) || input.length === 0 || !input.trim()){//is blank?
         showPopularWorkouts();
     }else{
+        belowSearchText.style.visibility = "hidden"
+
         var matchingWorkouts = searchWorkoutsByKeywords(input);
         workoutBox.innerHTML = "";
         matchingWorkouts.forEach(function(entry){
@@ -143,6 +146,7 @@ function startStopPressed(button){
 }
 
 function showPopularWorkouts(){
+    belowSearchText.style.visibility = "visible";
     workoutBox.innerHTML = "";
     availableWorkouts.slice(0,20).forEach(function(entry) {
         workoutBox.appendChild(buttonFromWorkout(entry));
